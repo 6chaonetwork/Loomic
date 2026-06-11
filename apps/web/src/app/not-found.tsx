@@ -1,16 +1,30 @@
-import Link from "next/link";
-
 export default function NotFound() {
   return (
-    <div className="flex h-screen flex-col items-center justify-center gap-4">
-      <h1 className="text-4xl font-bold text-foreground">404</h1>
-      <p className="text-muted-foreground">Page not found</p>
-      <Link
+    <main
+      style={{
+        alignItems: "center",
+        display: "flex",
+        flexDirection: "column",
+        fontFamily:
+          "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        gap: "12px",
+        justifyContent: "center",
+        minHeight: "100vh",
+      }}
+    >
+      <h1 style={{ fontSize: "40px", margin: 0 }}>404</h1>
+      <p style={{ color: "#6b7280", margin: 0 }}>Page not found</p>
+      <a
         href="/home"
-        className="text-sm text-foreground underline underline-offset-4 hover:opacity-70"
+        style={{
+          color: "#111827",
+          fontSize: "14px",
+          textDecoration: "underline",
+          textUnderlineOffset: "4px",
+        }}
       >
         Back to Home
-      </Link>
-    </div>
+      </a>
+    </main>
   );
 }
