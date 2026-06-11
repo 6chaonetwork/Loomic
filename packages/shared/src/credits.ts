@@ -142,6 +142,7 @@ export const MODEL_MIN_TIER: Record<string, SubscriptionPlan> = {
   "google/nano-banana-pro": "starter",
   "google/nano-banana-2": "starter",
   "google/imagen-4": "starter",
+  "openai/gpt-image-2": "starter",
   "openai/gpt-image-1.5": "starter",
   "black-forest-labs/flux-kontext-pro": "starter",
   "bytedance/seedream-5-lite": "starter",
@@ -240,6 +241,7 @@ export const IMAGE_MODEL_COSTS: Record<string, ImageModelCost> = {
   "google/imagen-4": { standard: 5, hd: 10, ultra: 20 },
   "google/imagen-3": { standard: 5, hd: 10, ultra: 20 },
   // Replicate — OpenAI
+  "openai/gpt-image-2": { standard: 4, hd: 8, ultra: 16 },
   "openai/gpt-image-1.5": { standard: 4, hd: 8, ultra: 16 },
   // Replicate — BFL
   "black-forest-labs/flux-kontext-pro": { standard: 8, hd: 12, ultra: 20 },
