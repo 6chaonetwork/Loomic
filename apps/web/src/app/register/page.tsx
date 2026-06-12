@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { AuthShell } from "../../components/auth/auth-shell";
 import { LoadingScreen } from "../../components/loading-screen";
@@ -11,6 +11,12 @@ import { useAuth } from "../../lib/auth-context";
 export default function RegisterPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    console.info("[loomic:web] register page mounted");
+  }, []);
 
   useEffect(() => {
     if (!loading && user) {
@@ -18,7 +24,7 @@ export default function RegisterPage() {
     }
   }, [user, loading, router]);
 
-  if (loading || user) return <LoadingScreen />;
+  if (!mounted || loading || user) return <LoadingScreen />;
 
   return (
     <AuthShell

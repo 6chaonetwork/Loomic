@@ -36,6 +36,7 @@ yarn-error.log*
 .env*.local
 .env
 .env.cloud
+zeabur-api.env
 
 # service account credentials (never commit)
 **/credentials/*.json
