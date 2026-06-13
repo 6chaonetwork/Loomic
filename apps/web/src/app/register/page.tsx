@@ -8,15 +8,9 @@ import { LoadingScreen } from "../../components/loading-screen";
 import { RegisterForm } from "../../components/register-form";
 import { useAuth } from "../../lib/auth-context";
 
-export default function RegisterPage() {
+function RegisterPageContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    console.info("[loomic:web] register page mounted");
-  }, []);
 
   useEffect(() => {
     if (!loading && user) {
@@ -24,7 +18,7 @@ export default function RegisterPage() {
     }
   }, [user, loading, router]);
 
-  if (!mounted || loading || user) return <LoadingScreen />;
+  if (loading || user) return <LoadingScreen />;
 
   return (
     <AuthShell
@@ -39,4 +33,17 @@ export default function RegisterPage() {
       <RegisterForm />
     </AuthShell>
   );
+}
+
+export default function RegisterPage() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    console.info("[loomic:web] register page mounted");
+  }, []);
+
+  if (!mounted) return <LoadingScreen />;
+
+  return <RegisterPageContent />;
 }

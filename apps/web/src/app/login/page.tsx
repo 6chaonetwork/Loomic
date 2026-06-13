@@ -22,7 +22,6 @@ function LoginPageContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [mounted, setMounted] = useState(false);
   const callbackError = searchParams.get("error");
   const initialErrorMessage = callbackError
     ? (CALLBACK_ERROR_MESSAGES[callbackError] ??
@@ -30,17 +29,12 @@ function LoginPageContent() {
     : null;
 
   useEffect(() => {
-    setMounted(true);
-    console.info("[loomic:web] login page mounted");
-  }, []);
-
-  useEffect(() => {
     if (!loading && user) {
       router.replace("/home");
     }
   }, [user, loading, router]);
 
-  if (!mounted || loading || user) return <LoadingScreen />;
+  if (loading || user) return <LoadingScreen />;
 
   return (
     <AuthShell
@@ -58,6 +52,15 @@ function LoginPageContent() {
 }
 
 export default function LoginPage() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    console.info("[loomic:web] login page mounted");
+  }, []);
+
+  if (!mounted) return <LoadingScreen />;
+
   return (
     <Suspense fallback={<LoadingScreen />}>
       <LoginPageContent />

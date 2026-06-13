@@ -1,21 +1,22 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import Link from "next/link";
 import { Settings } from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
+import { useSubscription } from "@/hooks/use-subscription";
 import { useAuth } from "@/lib/auth-context";
 import { createCheckout } from "@/lib/payments-api";
-import { useSubscription } from "@/hooks/use-subscription";
 
-import type { BillingPeriod } from "./components/pricing-data";
-import { PricingNav } from "./components/pricing-nav";
-import { PricingHero } from "./components/pricing-hero";
-import { PricingToggle } from "./components/pricing-toggle";
+import { LoadingScreen } from "../../components/loading-screen";
 import { PricingCards } from "./components/pricing-cards";
 import { PricingComparison } from "./components/pricing-comparison";
-import { PricingFAQ } from "./components/pricing-faq";
 import { PricingCTA } from "./components/pricing-cta";
+import type { BillingPeriod } from "./components/pricing-data";
+import { PricingFAQ } from "./components/pricing-faq";
+import { PricingHero } from "./components/pricing-hero";
+import { PricingNav } from "./components/pricing-nav";
+import { PricingToggle } from "./components/pricing-toggle";
 
 function openLemonCheckout(url: string) {
   if (window.LemonSqueezy?.Url?.Open) {
@@ -25,7 +26,7 @@ function openLemonCheckout(url: string) {
   }
 }
 
-export default function PricingPage() {
+function PricingPageContent() {
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("yearly");
   const { session } = useAuth();
   const { subscription } = useSubscription();
@@ -97,4 +98,17 @@ export default function PricingPage() {
       </main>
     </div>
   );
+}
+
+export default function PricingPage() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    console.info("[loomic:web] pricing page mounted");
+  }, []);
+
+  if (!mounted) return <LoadingScreen />;
+
+  return <PricingPageContent />;
 }
