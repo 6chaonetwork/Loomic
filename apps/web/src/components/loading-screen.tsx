@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Full-screen loading screen with animated Loomic logo.
  * - Body blob: gentle float + breathing

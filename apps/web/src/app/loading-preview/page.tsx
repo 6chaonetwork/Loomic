@@ -1,5 +1,5 @@
-import LoadingPreviewEntry from "./loading-preview-entry";
+import { LoadingScreen } from "../../components/loading-screen";
 
 export default function LoadingPreviewPage() {
-  return <LoadingPreviewEntry />;
+  return <LoadingScreen />;
 }
