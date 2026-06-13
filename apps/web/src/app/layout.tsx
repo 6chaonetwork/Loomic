@@ -7,6 +7,11 @@ import { Providers } from "../components/providers";
 
 import "./globals.css";
 
+// Loomic web is an authenticated browser application. Zeabur builds the Docker
+// image with `next build`, so keep route rendering dynamic instead of letting
+// Next statically prerender client/session-heavy pages during image creation.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Loomic",
   description: "AI-powered creative workspace",
