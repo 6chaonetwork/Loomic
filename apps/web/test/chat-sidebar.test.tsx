@@ -15,6 +15,11 @@ const {
   fetchSessionsMock,
   saveMessageMock,
   updateSessionTitleMock,
+  claimDailyCreditsMock,
+  fetchBrandKitMock,
+  fetchImageModelsMock,
+  fetchModelsMock,
+  fetchWorkspaceSkillsMock,
 } = vi.hoisted(() => ({
   createSessionMock: vi.fn(),
   deleteSessionMock: vi.fn(),
@@ -22,13 +27,37 @@ const {
   fetchSessionsMock: vi.fn(),
   saveMessageMock: vi.fn(),
   updateSessionTitleMock: vi.fn(),
+  claimDailyCreditsMock: vi.fn(),
+  fetchBrandKitMock: vi.fn(),
+  fetchImageModelsMock: vi.fn(),
+  fetchModelsMock: vi.fn(),
+  fetchWorkspaceSkillsMock: vi.fn(),
+}));
+
+vi.mock("../src/components/credits/tier-limit-toast", () => ({
+  useTierLimitToast: () => ({ showTierLimit: vi.fn() }),
+}));
+
+vi.mock("../src/components/toast", () => ({
+  useToast: () => vi.fn(),
+}));
+
+vi.mock("../src/lib/brand-kit-api", () => ({
+  fetchBrandKit: fetchBrandKitMock,
+}));
+
+vi.mock("../src/lib/credits-api", () => ({
+  claimDailyCredits: claimDailyCreditsMock,
 }));
 
 vi.mock("../src/lib/server-api", () => ({
   createSession: createSessionMock,
   deleteSession: deleteSessionMock,
+  fetchModels: fetchModelsMock,
+  fetchImageModels: fetchImageModelsMock,
   fetchMessages: fetchMessagesMock,
   fetchSessions: fetchSessionsMock,
+  fetchWorkspaceSkills: fetchWorkspaceSkillsMock,
   saveMessage: saveMessageMock,
   updateSessionTitle: updateSessionTitleMock,
 }));
@@ -47,6 +76,7 @@ function createMockWs(): WebSocketHandle {
     cancelRun: vi.fn(),
     onEvent: vi.fn(() => () => {}),
     registerRPC: vi.fn(() => () => {}),
+    resumeCanvas: vi.fn(),
   };
 }
 
@@ -57,6 +87,20 @@ describe("ChatSidebar", () => {
     Object.defineProperty(Element.prototype, "scrollIntoView", {
       configurable: true,
       value: vi.fn(),
+      writable: true,
+    });
+    Object.defineProperty(window, "matchMedia", {
+      configurable: true,
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
       writable: true,
     });
     mockWs = createMockWs();
@@ -85,6 +129,16 @@ describe("ChatSidebar", () => {
     saveMessageMock.mockResolvedValue(undefined);
     updateSessionTitleMock.mockReset();
     updateSessionTitleMock.mockResolvedValue(undefined);
+    claimDailyCreditsMock.mockReset();
+    claimDailyCreditsMock.mockResolvedValue({ ok: true });
+    fetchBrandKitMock.mockReset();
+    fetchBrandKitMock.mockResolvedValue({ assets: [] });
+    fetchImageModelsMock.mockReset();
+    fetchImageModelsMock.mockResolvedValue({ models: [] });
+    fetchModelsMock.mockReset();
+    fetchModelsMock.mockResolvedValue({ models: [] });
+    fetchWorkspaceSkillsMock.mockReset();
+    fetchWorkspaceSkillsMock.mockResolvedValue({ skills: [] });
   });
 
   afterEach(() => {
