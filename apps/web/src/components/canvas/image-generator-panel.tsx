@@ -197,6 +197,8 @@ export function ImageGeneratorPanel({
         width: elementBounds.width,
         height: elementBounds.height,
         title: prompt.trim().slice(0, 60),
+        source: "generated",
+        storageUrl: result.url,
       });
 
       // Replace: delete placeholder, add image
