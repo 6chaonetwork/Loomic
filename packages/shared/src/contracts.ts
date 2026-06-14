@@ -28,7 +28,9 @@ export const runStatusSchema = z.enum([
 
 export const imageAttachmentSchema = z.object({
   assetId: z.string().min(1),
-  url: z.string().url(),
+  // Canvas selections can be either persisted HTTP(S) URLs or inline data URIs
+  // for older/local-only Excalidraw files.
+  url: z.string().min(1),
   mimeType: z.string().min(1),
   name: z.string().min(1).optional(),
 });

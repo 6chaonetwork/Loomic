@@ -1053,12 +1053,20 @@ export function createAgentRunService(options: CreateAgentRuntimeOptions) {
                   b64 = dataUriMatch[2]!;
                 } else {
                   const res = await fetch(a.url);
+                  if (!res.ok) {
+                    throw new Error(`Attachment fetch failed (${res.status}) for ${a.assetId}`);
+                  }
                   const buf = Buffer.from(await res.arrayBuffer());
                   mime = a.mimeType || res.headers.get("content-type") || "image/png";
                   b64 = buf.toString("base64");
                 }
 
                 downloaded.push({ assetId: a.assetId, mimeType: mime, base64: b64 });
+                console.info("[agent-runtime] Prepared image attachment for vision input", {
+                  assetId: a.assetId,
+                  mimeType: mime,
+                  base64Length: b64.length,
+                });
                 // Use standard LangChain image_url format — works with both
                 // Google Gemini and OpenAI adapters. The Anthropic-style
                 // { type: "image", source_type: "base64" } format is NOT
@@ -1066,13 +1074,17 @@ export function createAgentRunService(options: CreateAgentRuntimeOptions) {
                 // as raw text, blowing past the token limit.
                 return {
                   type: "image_url" as const,
-                  image_url: `data:${mime};base64,${b64}`,
+                  image_url: {
+                    url: `data:${mime};base64,${b64}`,
+                  },
                 };
-              } catch {
-                return {
-                  type: "image_url" as const,
-                  image_url: a.url,
-                };
+              } catch (error) {
+                console.warn("[agent-runtime] Failed to prepare image attachment", {
+                  assetId: a.assetId,
+                  urlPrefix: a.url.slice(0, 80),
+                  error: error instanceof Error ? error.message : String(error),
+                });
+                throw new Error(`无法读取画布图片附件，请移除该图片后重试，或重新生成/上传图片。`);
               }
             }),
           );

@@ -23,6 +23,7 @@ type ChatInputProps = {
   mentions?: MessageMention[];
   onRemoveMention?: (mention: MessageMention) => void;
   selectedCanvasElements?: CanvasSelectedElement[];
+  onClearCanvasSelection?: () => void;
 };
 
 export type ChatInputHandle = {
@@ -42,6 +43,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
   mentions,
   onRemoveMention,
   selectedCanvasElements,
+  onClearCanvasSelection,
 }, ref) {
   const [value, setValue] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -50,6 +52,19 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
   const { preference: videoPreference } = useVideoModelPreference();
   const [modelPopoverOpen, setModelPopoverOpen] = useState(false);
   const modelBtnRef = useRef<HTMLButtonElement>(null);
+
+  // Memoize canvas selection summary -- selectedCanvasElements changes on every
+  // canvas interaction, but the counts only change when the selection actually differs
+  const selectionSummary = useMemo(() => {
+    const imageCount = selectedCanvasElements?.filter((el) => el.type === "image").length ?? 0;
+    const totalCount = selectedCanvasElements?.length ?? 0;
+    return {
+      selectionImageCount: imageCount,
+      selectionShapeCount: totalCount - imageCount,
+      hasSelection: totalCount > 0,
+    };
+  }, [selectedCanvasElements]);
+  const { selectionImageCount, selectionShapeCount, hasSelection } = selectionSummary;
 
   useImperativeHandle(ref, () => ({
     clearAtQuery() {
@@ -63,13 +78,13 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
 
   const handleSubmit = useCallback(() => {
     const trimmed = value.trim();
-    if ((!trimmed && (!attachments || attachments.length === 0)) || disabled || isUploading) return;
+    if ((!trimmed && (!attachments || attachments.length === 0) && !hasSelection) || disabled || isUploading) return;
     onSend(trimmed);
     setValue("");
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
-  }, [value, disabled, isUploading, onSend, attachments]);
+  }, [value, disabled, isUploading, onSend, attachments, hasSelection]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -170,20 +185,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
     [onAddFiles],
   );
 
-  const hasContent = value.trim().length > 0 || (attachments && attachments.length > 0);
-
-  // Memoize canvas selection summary -- selectedCanvasElements changes on every
-  // canvas interaction, but the counts only change when the selection actually differs
-  const selectionSummary = useMemo(() => {
-    const imageCount = selectedCanvasElements?.filter((el) => el.type === "image").length ?? 0;
-    const totalCount = selectedCanvasElements?.length ?? 0;
-    return {
-      selectionImageCount: imageCount,
-      selectionShapeCount: totalCount - imageCount,
-      hasSelection: totalCount > 0,
-    };
-  }, [selectedCanvasElements]);
-  const { selectionImageCount, selectionShapeCount, hasSelection } = selectionSummary;
+  const hasContent = value.trim().length > 0 || (attachments && attachments.length > 0) || hasSelection;
 
   return (
     <div className="px-2 pb-2">
@@ -193,7 +195,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
         onDragOver={handleDragOver}
       >
         {hasSelection && (
-          <div className="flex items-center gap-2 px-3 py-1.5 text-xs text-muted-foreground bg-muted/50 rounded-lg">
+          <div className="flex items-center justify-between gap-2 px-3 py-1.5 text-xs text-muted-foreground bg-muted/50 rounded-lg">
             <div className="flex items-center gap-1.5 min-w-0">
               {selectionImageCount > 0 && (
                 <span className="flex items-center gap-1">
@@ -216,8 +218,27 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
                   {selectionShapeCount} {selectionShapeCount === 1 ? "shape" : "shapes"}
                 </span>
               )}
-              <span className="text-[10px] text-muted-foreground/60">selected on canvas</span>
+              <span className="text-[10px] text-muted-foreground/60">将随消息发送</span>
             </div>
+            {onClearCanvasSelection && (
+              <button
+                type="button"
+                onClick={onClearCanvasSelection}
+                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+                title="移除画布选区"
+                aria-label="移除画布选区"
+              >
+                <svg
+                  className="h-3 w-3"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
         )}
         {attachments && onRemoveAttachment && (

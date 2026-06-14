@@ -67,6 +67,23 @@ describe("@loomic/shared contracts", () => {
     expect(result.attachments![0].assetId).toBe("asset-123");
   });
 
+  it("accepts canvas selection data URI attachments in run creation", () => {
+    const result = runCreateRequestSchema.parse({
+      sessionId: "session-1",
+      conversationId: "conv-1",
+      prompt: "Analyze this selected image",
+      attachments: [
+        {
+          assetId: "canvas-image-123",
+          url: "data:image/png;base64,iVBORw0KGgo=",
+          mimeType: "image/png",
+        },
+      ],
+    });
+
+    expect(result.attachments![0].url).toMatch(/^data:image\/png;base64,/);
+  });
+
   it("accepts optional image generation preference in run creation", () => {
     const result = runCreateRequestSchema.parse({
       sessionId: "session-1",

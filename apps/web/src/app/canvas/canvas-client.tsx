@@ -171,6 +171,16 @@ function CanvasPageContent() {
       });
   }, []);
 
+  const handleClearCanvasSelection = useCallback(() => {
+    const api = excalidrawApiRef.current;
+    if (!api) return;
+    api.updateScene({
+      appState: { selectedElementIds: {} },
+      captureUpdate: "IMMEDIATELY",
+    });
+    setSelectedCanvasElements([]);
+  }, []);
+
   // Only re-fetch when canvasId changes or on initial auth resolution.
   // Token refreshes (e.g. tab switch back) should NOT trigger a reload —
   // we depend on user.id (stable string) instead of the user object ref.
@@ -321,6 +331,7 @@ function CanvasPageContent() {
         currentBrandKitId={brandKitId}
         ws={ws}
         selectedCanvasElements={selectedCanvasElements}
+        onClearCanvasSelection={handleClearCanvasSelection}
       />
     </div>
   );

@@ -69,6 +69,7 @@ type ChatSidebarProps = {
   currentBrandKitId?: string | null;
   ws: WebSocketHandle;
   selectedCanvasElements?: CanvasSelectedElement[];
+  onClearCanvasSelection?: () => void;
 };
 
 export function ChatSidebar({
@@ -87,6 +88,7 @@ export function ChatSidebar({
   currentBrandKitId,
   ws,
   selectedCanvasElements,
+  onClearCanvasSelection,
 }: ChatSidebarProps) {
   const breakpoint = useBreakpoint();
   const isOverlay = breakpoint !== "desktop";
@@ -1039,6 +1041,7 @@ export function ChatSidebar({
           mentions={messageMentions}
           onRemoveMention={handleRemoveMention}
           {...(selectedCanvasElements ? { selectedCanvasElements } : {})}
+          {...(onClearCanvasSelection ? { onClearCanvasSelection } : {})}
         />
       </div>
     </>
