@@ -47,12 +47,38 @@ export class OpenAIImageProvider implements ImageProvider {
         n: 1,
       });
 
-      const url = response.data?.[0]?.url;
-      if (!url) {
-        throw new GenerationError("openai", "no_output", "OpenAI returned no image URL");
+      const image = response.data?.[0];
+      const url = image?.url;
+      const b64Json = image?.b64_json;
+
+      console.info("[image-gen:openai] Image generation response received", {
+        model,
+        size,
+        promptLength: params.prompt.length,
+        outputType: url ? "url" : b64Json ? "b64_json" : "none",
+      });
+
+      if (url) {
+        return { url, mimeType: "image/png", width, height };
       }
 
-      return { url, mimeType: "image/png", width, height };
+      if (b64Json) {
+        // GPT image models return base64 by default; keep the provider contract as URL-like data URI
+        // so the existing persistence pipeline can upload the generated asset.
+        // TODO(image-gen): expose output_format once users can choose png/webp/jpeg per provider.
+        return {
+          url: `data:image/png;base64,${b64Json}`,
+          mimeType: "image/png",
+          width,
+          height,
+        };
+      }
+
+      throw new GenerationError(
+        "openai",
+        "no_output",
+        "OpenAI returned no image URL or base64 image data",
+      );
     } catch (error) {
       if (error instanceof GenerationError) throw error;
       throw new GenerationError(

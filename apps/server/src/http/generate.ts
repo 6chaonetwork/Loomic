@@ -408,13 +408,41 @@ async function downloadAndUpload(
   user: AuthenticatedUser,
   deps: { uploadService: UploadService; viewerService: ViewerService },
 ): Promise<{ signedUrl: string; assetId: string }> {
-  const response = await fetch(sourceUrl);
-  if (!response.ok) {
-    throw new Error(`Failed to download generated image: ${response.status}`);
-  }
-  const buffer = Buffer.from(await response.arrayBuffer());
+  let buffer: Buffer;
+  let resolvedMimeType = mimeType;
 
-  const ext = mimeType === "image/webp" ? "webp" : "png";
+  if (sourceUrl.startsWith("data:")) {
+    const match = sourceUrl.match(/^data:([^;]+);base64,(.+)$/);
+    if (!match) {
+      throw new Error("Failed to decode generated image data URI");
+    }
+    resolvedMimeType = match[1] ?? mimeType;
+    buffer = Buffer.from(match[2] ?? "", "base64");
+    console.info("[image-gen] Decoded generated image data URI", {
+      mimeType: resolvedMimeType,
+      byteLength: buffer.byteLength,
+      promptLength: prompt.length,
+    });
+  } else {
+    const response = await fetch(sourceUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to download generated image: ${response.status}`);
+    }
+    buffer = Buffer.from(await response.arrayBuffer());
+    resolvedMimeType = response.headers.get("content-type") ?? mimeType;
+    console.info("[image-gen] Downloaded generated image URL", {
+      mimeType: resolvedMimeType,
+      byteLength: buffer.byteLength,
+      promptLength: prompt.length,
+    });
+  }
+
+  const ext =
+    resolvedMimeType === "image/webp"
+      ? "webp"
+      : resolvedMimeType === "image/jpeg"
+        ? "jpg"
+        : "png";
   const slug = prompt.slice(0, 40).replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "");
   const fileName = `gen-${slug}-${Date.now()}.${ext}`;
 
@@ -424,7 +452,7 @@ async function downloadAndUpload(
     bucket: "project-assets",
     fileName,
     fileBuffer: buffer,
-    mimeType,
+    mimeType: resolvedMimeType,
     workspaceId: viewer.workspace.id,
   });
 
