@@ -200,7 +200,14 @@ export function CanvasEditor({
           const files: Record<string, Record<string, unknown>> = {};
           const rawFiles = excalidrawApi.getFiles() as Record<string, any>;
           for (const [id, file] of Object.entries(rawFiles)) {
-            files[id] = { id: file.id, dataURL: file.dataURL, mimeType: file.mimeType, created: file.created };
+            const storageUrl = file.storageUrl ?? initialFilesRef.current[id]?.storageUrl;
+            files[id] = {
+              id: file.id,
+              dataURL: file.dataURL,
+              mimeType: file.mimeType,
+              created: file.created,
+              ...(typeof storageUrl === "string" && storageUrl ? { storageUrl } : {}),
+            };
           }
           const appState = excalidrawApi.getAppState();
           saveCanvas(accessTokenRef.current, canvasIdRef.current, {
@@ -242,11 +249,13 @@ export function CanvasEditor({
         if (excalidrawApi) {
           const rawFiles = excalidrawApi.getFiles() as Record<string, any>;
           for (const [id, file] of Object.entries(rawFiles)) {
+            const storageUrl = file.storageUrl ?? initialFilesRef.current[id]?.storageUrl;
             files[id] = {
               id: file.id,
               dataURL: file.dataURL,
               mimeType: file.mimeType,
               created: file.created,
+              ...(typeof storageUrl === "string" && storageUrl ? { storageUrl } : {}),
             };
           }
         }

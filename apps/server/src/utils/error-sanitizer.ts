@@ -11,6 +11,8 @@ const AUTH_PATTERN =
   /jwt|token|unauthorized|forbidden|credential|service.account/i;
 const INFRA_PATTERN =
   /econnrefused|econnreset|etimedout|dns|socket|tls|certificate/i;
+const USER_FACING_ZH_PATTERN =
+  /[\u4e00-\u9fff].*(请|无法|失败|超过|重新|稍后|刷新|检查|取消|不可用|异常)/;
 
 export function sanitizeErrorForClient(error: unknown): string {
   const raw = error instanceof Error ? error.message : String(error);
@@ -54,11 +56,15 @@ export function sanitizeErrorForClient(error: unknown): string {
   if (raw.includes("abort") || raw.includes("cancel")) {
     return "请求已取消。";
   }
+  if (USER_FACING_ZH_PATTERN.test(raw) && raw.length <= 160) {
+    return raw;
+  }
   if (raw.length > 100) {
     // Long messages are likely stack traces or JSON errors
     return "请求处理失败，请重试。";
   }
 
-  // Short, non-technical messages can pass through
+  // Unknown short messages may still include provider internals, so keep the
+  // public fallback unless they matched an explicit user-facing case above.
   return "请求处理失败，请重试。";
 }

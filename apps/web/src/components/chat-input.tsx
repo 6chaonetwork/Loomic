@@ -204,7 +204,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
                     <circle cx="8.5" cy="8.5" r="1.5" />
                     <path d="m21 15-5-5L5 21" />
                   </svg>
-                  {selectionImageCount} {selectionImageCount === 1 ? "image" : "images"}
+                  {selectionImageCount} 张图片
                 </span>
               )}
               {selectionImageCount > 0 && selectionShapeCount > 0 && (
@@ -215,7 +215,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
                   <svg className="h-3 w-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
                     <rect x="3" y="3" width="18" height="18" rx="2" />
                   </svg>
-                  {selectionShapeCount} {selectionShapeCount === 1 ? "shape" : "shapes"}
+                  {selectionShapeCount} 个图形
                 </span>
               )}
               <span className="text-[10px] text-muted-foreground/60">将随消息发送</span>

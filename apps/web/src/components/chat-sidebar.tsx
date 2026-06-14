@@ -27,7 +27,7 @@ import { useVideoModelPreference } from "../hooks/use-video-model-preference";
 import type { WebSocketHandle } from "../hooks/use-websocket";
 import { fetchBrandKit } from "../lib/brand-kit-api";
 import { claimDailyCredits } from "../lib/credits-api";
-import { fetchImageModels, fetchWorkspaceSkills, saveMessage } from "../lib/server-api";
+import { fetchImageModels, fetchWorkspaceSkills, saveMessage, uploadFile } from "../lib/server-api";
 import type { CanvasSelectedElement } from "./canvas-editor";
 import {
   type BrandKitMentionItem,
@@ -50,6 +50,30 @@ type BrandKitAssetType = BrandKitMentionItem["assetType"];
 
 function isBrandKitAssetType(value: string): value is BrandKitAssetType {
   return value === "color" || value === "font" || value === "logo" || value === "image";
+}
+
+const MAX_INLINE_CANVAS_ATTACHMENT_BYTES = 10 * 1024 * 1024;
+
+function dataUrlToFile(dataUrl: string, fileName: string, fallbackMimeType: string): File {
+  const match = dataUrl.match(/^data:([^;,]+)?(;base64)?,(.*)$/s);
+  if (!match) {
+    throw new Error("当前选中的画布图片不是有效的图片数据，请重新上传或重新生成后再试。");
+  }
+
+  const mimeType = match[1] || fallbackMimeType || "image/png";
+  const isBase64 = !!match[2];
+  const payload = match[3] ?? "";
+  const binary = isBase64 ? atob(payload) : decodeURIComponent(payload);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  if (bytes.byteLength > MAX_INLINE_CANVAS_ATTACHMENT_BYTES) {
+    throw new Error("当前选中的画布图片超过 10MB，暂时无法作为聊天附件发送。请压缩后重新上传。");
+  }
+
+  return new File([bytes], fileName, { type: mimeType });
 }
 
 type ChatSidebarProps = {
@@ -388,15 +412,48 @@ export function ChatSidebar({
       );
       if (selectedImageEls.length > 0 && !attachmentsOverride) {
         const existingIds = new Set(currentAttachments.map((a) => a.assetId));
-        const selectionAttachments: ReadyAttachment[] = selectedImageEls
-          .filter((el) => !existingIds.has(el.id))
-          .map((el) => ({
+        const selectionAttachments: ReadyAttachment[] = [];
+        for (const el of selectedImageEls) {
+          if (existingIds.has(el.id)) continue;
+
+          const mimeType = "image/png";
+          const name = `画布选区 ${el.id.slice(0, 6)}`;
+          let url = el.storageUrl;
+
+          if (!url && el.dataUrl) {
+            try {
+              const file = dataUrlToFile(el.dataUrl, `${el.id}.png`, mimeType);
+              console.info("[chat] Uploading inline canvas selection before send", {
+                elementId: el.id,
+                bytes: file.size,
+                mimeType: file.type,
+              });
+              const uploaded = await uploadFile(accessTokenRef.current, file);
+              url = uploaded.url;
+            } catch (error) {
+              console.warn("[chat] Failed to upload inline canvas selection", {
+                elementId: el.id,
+                error: error instanceof Error ? error.message : String(error),
+              });
+              showToast(
+                error instanceof Error
+                  ? error.message
+                  : "画布图片上传失败，请重新选择或上传图片后再试。",
+                "error",
+              );
+              return;
+            }
+          }
+
+          if (!url) continue;
+          selectionAttachments.push({
             assetId: el.id,
-            url: el.storageUrl ?? el.dataUrl!,
-            mimeType: "image/png",
+            url,
+            mimeType,
             source: "canvas-ref" as const,
-            name: `Canvas selection ${el.id.slice(0, 6)}`,
-          }));
+            name,
+          });
+        }
         if (selectionAttachments.length > 0) {
           currentAttachments = [...currentAttachments, ...selectionAttachments];
         }
@@ -630,6 +687,7 @@ export function ChatSidebar({
           );
         });
         clearAttachments();
+        onClearCanvasSelection?.();
         setMessageMentions([]);
 
         await streamDone;
@@ -664,6 +722,8 @@ export function ChatSidebar({
       onStreamEvent,
       readyAttachments,
       clearAttachments,
+      onClearCanvasSelection,
+      showToast,
       ws,
       autoTitleSession,
       accessTokenRef,
