@@ -408,40 +408,6 @@
   50%      { transform: translate3d(0, -12px, 0) rotateX(1.1deg) rotateY(-1.4deg); }
 }
 
-/* Hero -- kinetic brand mark and light ribbons */
-.landing-brand-ring {
-  background:
-    linear-gradient(135deg, oklch(0.75 0.23 318 / 0.16), transparent 42%),
-    linear-gradient(315deg, oklch(0.72 0.18 232 / 0.18), transparent 48%);
-  box-shadow:
-    0 0 34px oklch(0.73 0.23 310 / 0.28),
-    inset 0 0 28px oklch(0.74 0.18 230 / 0.2);
-}
-
-.landing-brand-trail {
-  position: absolute;
-  inset: auto;
-  width: 148px;
-  height: 2px;
-  border-radius: 999px;
-  transform-origin: 100% 50%;
-  filter: blur(0.2px);
-}
-
-.landing-brand-trail-a {
-  top: 38px;
-  right: 58px;
-  transform: rotate(18deg);
-  background: linear-gradient(90deg, transparent, oklch(0.80 0.23 326 / 0.85));
-}
-
-.landing-brand-trail-b {
-  left: 58px;
-  bottom: 32px;
-  transform: rotate(-24deg);
-  background: linear-gradient(90deg, oklch(0.75 0.19 220 / 0.8), transparent);
-}
-
 .landing-hero-ribbon {
   width: 94vw;
   height: 32vw;
@@ -578,8 +544,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .landing-hero-ribbon,
-  .landing-brand-ring,
-  .landing-brand-trail,
   .landing-canvas-scan,
   .landing-cta-shimmer::after {
     animation: none !important;

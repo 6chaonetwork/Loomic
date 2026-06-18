@@ -40,7 +40,7 @@ export function AuthShell({
           >
             <BrandLogo
               iconClassName="size-14 rounded-2xl"
-              className="text-4xl"
+              className="text-4xl text-white"
             />
           </motion.div>
 

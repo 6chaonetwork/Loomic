@@ -25,7 +25,7 @@ export function BrandLogo({
   priority = false,
 }: BrandLogoProps) {
   return (
-    <span className={cn("inline-flex items-center gap-2", className)}>
+    <span className={cn("inline-flex items-center gap-2 text-foreground", className)}>
       <span
         className={cn(
           "relative size-7 shrink-0 overflow-hidden rounded-lg bg-black shadow-sm ring-1 ring-white/10",
@@ -44,7 +44,7 @@ export function BrandLogo({
         />
       </span>
       {showText && (
-        <span className="font-bold tracking-tight text-foreground">
+        <span className="font-bold tracking-tight text-current">
           {BRAND_NAME}
         </span>
       )}

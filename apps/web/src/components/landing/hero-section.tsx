@@ -6,97 +6,12 @@ import Link from "next/link";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Sparkles, ChevronDown, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { BRAND_ICON_SRC, BRAND_NAME } from "@/components/brand/brand-logo";
+import { BRAND_NAME } from "@/components/brand/brand-logo";
 import { fadeUp, blurIn, scaleUp } from "@/components/landing/motion";
 import { TypewriterText, useTypewriter } from "@/components/landing/typewriter";
 
 const HERO_HEADLINE = "让好画面，不可错过";
 const EXPO_OUT = [0.16, 1, 0.3, 1] as const;
-const OVERSHOOT = [0.34, 1.56, 0.64, 1] as const;
-
-// ---------------------------------------------------------------------------
-// BrandPrelude -- kinetic brand mark for the first viewport
-// ---------------------------------------------------------------------------
-
-function BrandPrelude() {
-  const shouldReduceMotion = useReducedMotion();
-  const ringMotionProps = shouldReduceMotion
-    ? {}
-    : {
-        animate: {
-          rotate: [0, 360],
-          scale: [1, 1.04, 1],
-        },
-      };
-  const markMotionProps = shouldReduceMotion
-    ? {}
-    : {
-        animate: {
-          y: [0, -7, 0],
-          rotate: [0, -1.5, 1.5, 0],
-        },
-      };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 24, scale: 0.86, filter: "blur(14px)" }}
-      animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-      transition={{ duration: 0.95, ease: OVERSHOOT }}
-      className="relative mb-5 flex flex-col items-center"
-    >
-      <div className="relative grid size-24 place-items-center md:size-28">
-        <motion.span
-          aria-hidden="true"
-          className="landing-brand-ring absolute inset-0 rounded-[2rem] border border-white/20"
-          {...ringMotionProps}
-          transition={{
-            rotate: { duration: 18, repeat: Infinity, ease: "linear" },
-            scale: { duration: 4.8, repeat: Infinity, ease: "easeInOut" },
-          }}
-        />
-        <motion.span
-          aria-hidden="true"
-          className="landing-brand-trail landing-brand-trail-a"
-          initial={{ opacity: 0, pathLength: 0 }}
-          animate={{ opacity: [0, 0.85, 0.2], pathLength: 1 }}
-          transition={{ duration: 1.3, delay: 0.2, ease: EXPO_OUT }}
-        />
-        <motion.span
-          aria-hidden="true"
-          className="landing-brand-trail landing-brand-trail-b"
-          initial={{ opacity: 0, pathLength: 0 }}
-          animate={{ opacity: [0, 0.7, 0.16], pathLength: 1 }}
-          transition={{ duration: 1.35, delay: 0.34, ease: EXPO_OUT }}
-        />
-        <motion.span
-          className="relative size-20 overflow-hidden rounded-[1.55rem] bg-black shadow-[0_20px_70px_oklch(0.58_0.22_294_/_0.36)] ring-1 ring-white/20 md:size-24"
-          {...markMotionProps}
-          transition={{ duration: 5.4, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <Image
-            src={BRAND_ICON_SRC}
-            alt=""
-            fill
-            priority
-            unoptimized
-            aria-hidden="true"
-            className="object-cover"
-            sizes="96px"
-          />
-        </motion.span>
-      </div>
-
-      <motion.span
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.45, ease: EXPO_OUT }}
-        className="mt-3 text-sm font-medium tracking-[0.38em] text-muted-foreground"
-      >
-        {BRAND_NAME}
-      </motion.span>
-    </motion.div>
-  );
-}
 
 // ---------------------------------------------------------------------------
 // HeroBadge
@@ -355,8 +270,6 @@ export function HeroSection() {
 
       {/* Content */}
       <div className="flex flex-col items-center text-center px-4 max-w-4xl mx-auto w-full">
-        <BrandPrelude />
-
         {/* Badge */}
         <HeroBadge />
 
@@ -395,7 +308,7 @@ export function HeroSection() {
         >
           <Link
             href="/login"
-          className={cn(
+            className={cn(
               "landing-cta-shimmer inline-flex items-center px-8 py-3 rounded-full text-base font-medium",
               "text-foreground",
               "transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:scale-[1.035] active:scale-95",
