@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { type Variants } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { BRAND_NAME } from "@/components/brand/brand-logo";
 import { SectionHeader } from "@/components/landing/section-header";
 import {
   ScrollReveal,
@@ -147,7 +148,7 @@ const FEATURES: Feature[] = [
     icon: MessageSquare,
     title: "智能对话 -- 理解创意意图",
     description:
-      "不是冰冷的指令执行。Loomic 理解你的设计需求，主动提出建议，在对话中迭代出最佳方案。",
+      `不是冰冷的指令执行。${BRAND_NAME} 理解你的设计需求，主动提出建议，在对话中迭代出最佳方案。`,
     visual: <ChatVisual />,
     reversed: true,
     textVariants: slideInRight,
@@ -263,7 +264,7 @@ export function FeatureShowcase() {
         <div className="mb-20 md:mb-28">
           <SectionHeader
             title="设计，超越生成"
-            subtitle="Loomic 不只是生成工具，更是你的智能设计伙伴"
+            subtitle={`${BRAND_NAME} 不只是生成工具，更是你的智能设计伙伴`}
             className="[&_h2]:tracking-tighter"
           />
         </div>

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
-import { LoomicLogo } from "@/components/icons/loomic-logo";
+import { BRAND_NAME, BrandLogo } from "@/components/brand/brand-logo";
 import { CreditBalance } from "@/components/credits/credit-balance";
 import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
@@ -199,7 +199,7 @@ export function AppSidebar() {
         {/* Logo */}
         <Link
           href="/home"
-          title="Loomic"
+          title={BRAND_NAME}
           className="mb-1 flex h-9 w-9 items-center justify-center"
         >
           <motion.div
@@ -207,7 +207,7 @@ export function AppSidebar() {
             whileTap={{ scale: 0.9 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
-            <LoomicLogo className="size-7 text-foreground" />
+            <BrandLogo showText={false} iconClassName="size-7 rounded-lg" />
           </motion.div>
         </Link>
 

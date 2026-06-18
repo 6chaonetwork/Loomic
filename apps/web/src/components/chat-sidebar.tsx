@@ -25,6 +25,7 @@ import { useImageAttachments } from "../hooks/use-image-attachments";
 import { useImageModelPreference } from "../hooks/use-image-model-preference";
 import { useVideoModelPreference } from "../hooks/use-video-model-preference";
 import type { WebSocketHandle } from "../hooks/use-websocket";
+import { BRAND_NAME } from "@/components/brand/constants";
 import { fetchBrandKit } from "../lib/brand-kit-api";
 import { claimDailyCredits } from "../lib/credits-api";
 import { fetchImageModels, fetchWorkspaceSkills, saveMessage, uploadFile } from "../lib/server-api";
@@ -1006,7 +1007,7 @@ export function ChatSidebar({
       <div className="flex min-h-[48px] items-center justify-between pl-4 pr-2">
         <div className="flex items-center gap-1 min-w-0">
           <h2 className="text-sm font-semibold text-foreground shrink-0">
-            Loomic Agent
+            {BRAND_NAME} Agent
           </h2>
           {!sessionsLoading && (
             <SessionSelector

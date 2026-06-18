@@ -79,7 +79,7 @@ describe("Login page", () => {
         <LoginPage />
       </AuthProvider>,
     );
-    expect((await screen.findByText("Loomic")).textContent).toBe("Loomic");
+    expect((await screen.findByText("飞画不可")).textContent).toBe("飞画不可");
     expect(screen.getByText(/Send login link/i).textContent).toContain("Send login link");
     expect(screen.getByText(/Continue with Google/i).textContent).toContain("Continue with Google");
     expect(screen.getByRole("link", { name: /create one/i }).getAttribute("href")).toBe("/register");

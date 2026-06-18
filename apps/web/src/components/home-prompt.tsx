@@ -10,6 +10,7 @@ import {
 import type { ImageGenerationPreference, VideoGenerationPreference } from "@loomic/shared";
 
 import type { ImageAttachmentState, ReadyAttachment } from "../hooks/use-image-attachments";
+import { BRAND_NAME } from "@/components/brand/constants";
 import type { HomeExampleSelection } from "@/lib/home-example-seeds";
 import { AgentModelSelector } from "./agent-model-selector";
 import { ImageAttachmentBar } from "./image-attachment-bar";
@@ -239,7 +240,7 @@ export const HomePrompt = forwardRef<HomePromptHandle, HomePromptProps>(
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
           onInput={handleInput}
-          placeholder="让 Loomic 帮你设计..."
+          placeholder={`让 ${BRAND_NAME} 帮你设计...`}
           disabled={disabled}
           rows={2}
           className="w-full resize-none bg-transparent px-3 pt-3 pb-2 text-sm leading-relaxed text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50 sm:px-4 sm:pt-4"

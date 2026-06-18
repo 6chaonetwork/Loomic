@@ -2,28 +2,7 @@
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-
-// ---------------------------------------------------------------------------
-// Logo mark -- reused from nav
-// ---------------------------------------------------------------------------
-
-function LogoMark({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 28 28"
-      fill="none"
-      className={cn("size-6", className)}
-      aria-hidden="true"
-    >
-      <rect width="28" height="28" rx="6" fill="oklch(0.90 0.17 115)" />
-      <path
-        d="M8 20 L8 8 L14 8 C17.314 8 20 10.686 20 14 C20 17.314 17.314 20 14 20 Z"
-        fill="oklch(0.2 0 0)"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+import { BRAND_NAME, BRAND_TAGLINE, BrandLogo } from "@/components/brand/brand-logo";
 
 // ---------------------------------------------------------------------------
 // Footer link column
@@ -122,14 +101,11 @@ export function LandingFooter() {
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="inline-flex items-center gap-2">
-              <LogoMark />
-              <span className="text-base font-semibold text-foreground tracking-tight">
-                Loomic
-              </span>
+              <BrandLogo iconClassName="size-6 rounded-md" />
             </Link>
 
             <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-              AI 驱动的创意设计平台
+              {BRAND_TAGLINE}
             </p>
 
             {/* Social links */}
@@ -189,7 +165,7 @@ export function LandingFooter() {
         {/* Bottom bar */}
         <div className="mt-12 pt-6 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-3">
           <p className="text-sm text-muted-foreground">
-            &copy; {currentYear} Loomic. All rights reserved.
+            &copy; {currentYear} {BRAND_NAME}. All rights reserved.
           </p>
           <span className="text-sm text-muted-foreground">简体中文</span>
         </div>

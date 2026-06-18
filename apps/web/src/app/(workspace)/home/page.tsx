@@ -13,7 +13,7 @@ import { DeleteProjectDialog } from "@/components/delete-project-dialog";
 import { HomeExampleBrowser } from "@/components/home-example-browser";
 import { HomePrompt, type HomePromptHandle } from "@/components/home-prompt";
 import { LoadingScreen } from "@/components/loading-screen";
-import { LoomicLogo } from "@/components/icons/loomic-logo";
+import { BRAND_NAME, BrandLogo } from "@/components/brand/brand-logo";
 import { HomeProjectsSkeleton } from "@/components/skeletons/home-skeleton";
 import { useCreateProject } from "@/hooks/use-create-project";
 import { useDeleteProject } from "@/hooks/use-delete-project";
@@ -232,10 +232,7 @@ export default function HomePage() {
           custom={0}
           className="mb-3 flex items-center gap-2 md:mb-4"
         >
-          <LoomicLogo className="size-7 text-foreground md:size-8" />
-          <span className="text-lg font-semibold text-foreground md:text-xl">
-            Loomic
-          </span>
+          <BrandLogo iconClassName="size-7 md:size-8" className="text-lg md:text-xl" />
         </motion.div>
 
         <motion.h1
@@ -243,14 +240,14 @@ export default function HomePage() {
           custom={1}
           className="mb-1.5 text-xl font-bold text-foreground sm:text-2xl md:mb-2"
         >
-          让创意设计更简单
+          让好画面更简单
         </motion.h1>
         <motion.p
           variants={fadeUp}
           custom={2}
           className="mb-6 text-sm text-muted-foreground sm:text-base md:mb-8"
         >
-          你的 AI 设计助手，从想法到作品
+          {BRAND_NAME}，你的 AI 视觉创作助手
         </motion.p>
 
         {/* Prompt input */}

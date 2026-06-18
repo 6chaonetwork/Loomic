@@ -8,7 +8,7 @@ describe("LandingPage SSR", () => {
   it("renders the landing page on the server", () => {
     const html = renderToString(<LandingPage />);
 
-    expect(html).toContain("让创意，自由生长");
+    expect(html).toContain("让好画面，不可错过");
     expect(html).toContain("开始创作");
   });
 });

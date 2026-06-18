@@ -3,6 +3,7 @@
 import { MessageSquare, Sparkles, Paintbrush } from "lucide-react";
 import { type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BRAND_NAME } from "@/components/brand/brand-logo";
 import { SectionHeader } from "@/components/landing/section-header";
 import { StaggerContainer, FadeUp } from "@/components/landing/motion";
 
@@ -31,7 +32,7 @@ const STEPS: Step[] = [
     icon: Sparkles,
     title: "AI 智能创作",
     description:
-      "Loomic 分析你的需求，生成多个专业设计方案。从配色到排版，每个细节都经过精心考量。",
+      `${BRAND_NAME} 分析你的需求，生成多个专业设计方案。从配色到排版，每个细节都经过精心考量。`,
   },
   {
     number: "03",

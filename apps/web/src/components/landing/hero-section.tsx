@@ -3,11 +3,100 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Sparkles, ChevronDown, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BRAND_ICON_SRC, BRAND_NAME } from "@/components/brand/brand-logo";
 import { fadeUp, blurIn, scaleUp } from "@/components/landing/motion";
 import { TypewriterText, useTypewriter } from "@/components/landing/typewriter";
+
+const HERO_HEADLINE = "让好画面，不可错过";
+const EXPO_OUT = [0.16, 1, 0.3, 1] as const;
+const OVERSHOOT = [0.34, 1.56, 0.64, 1] as const;
+
+// ---------------------------------------------------------------------------
+// BrandPrelude -- kinetic brand mark for the first viewport
+// ---------------------------------------------------------------------------
+
+function BrandPrelude() {
+  const shouldReduceMotion = useReducedMotion();
+  const ringMotionProps = shouldReduceMotion
+    ? {}
+    : {
+        animate: {
+          rotate: [0, 360],
+          scale: [1, 1.04, 1],
+        },
+      };
+  const markMotionProps = shouldReduceMotion
+    ? {}
+    : {
+        animate: {
+          y: [0, -7, 0],
+          rotate: [0, -1.5, 1.5, 0],
+        },
+      };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24, scale: 0.86, filter: "blur(14px)" }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+      transition={{ duration: 0.95, ease: OVERSHOOT }}
+      className="relative mb-5 flex flex-col items-center"
+    >
+      <div className="relative grid size-24 place-items-center md:size-28">
+        <motion.span
+          aria-hidden="true"
+          className="landing-brand-ring absolute inset-0 rounded-[2rem] border border-white/20"
+          {...ringMotionProps}
+          transition={{
+            rotate: { duration: 18, repeat: Infinity, ease: "linear" },
+            scale: { duration: 4.8, repeat: Infinity, ease: "easeInOut" },
+          }}
+        />
+        <motion.span
+          aria-hidden="true"
+          className="landing-brand-trail landing-brand-trail-a"
+          initial={{ opacity: 0, pathLength: 0 }}
+          animate={{ opacity: [0, 0.85, 0.2], pathLength: 1 }}
+          transition={{ duration: 1.3, delay: 0.2, ease: EXPO_OUT }}
+        />
+        <motion.span
+          aria-hidden="true"
+          className="landing-brand-trail landing-brand-trail-b"
+          initial={{ opacity: 0, pathLength: 0 }}
+          animate={{ opacity: [0, 0.7, 0.16], pathLength: 1 }}
+          transition={{ duration: 1.35, delay: 0.34, ease: EXPO_OUT }}
+        />
+        <motion.span
+          className="relative size-20 overflow-hidden rounded-[1.55rem] bg-black shadow-[0_20px_70px_oklch(0.58_0.22_294_/_0.36)] ring-1 ring-white/20 md:size-24"
+          {...markMotionProps}
+          transition={{ duration: 5.4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <Image
+            src={BRAND_ICON_SRC}
+            alt=""
+            fill
+            priority
+            unoptimized
+            aria-hidden="true"
+            className="object-cover"
+            sizes="96px"
+          />
+        </motion.span>
+      </div>
+
+      <motion.span
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.45, ease: EXPO_OUT }}
+        className="mt-3 text-sm font-medium tracking-[0.38em] text-muted-foreground"
+      >
+        {BRAND_NAME}
+      </motion.span>
+    </motion.div>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // HeroBadge
@@ -19,10 +108,11 @@ function HeroBadge() {
       variants={fadeUp}
       initial="hidden"
       animate="visible"
-      className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-4 py-1.5 text-sm backdrop-blur"
+      transition={{ delay: 0.18, ease: EXPO_OUT }}
+      className="inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-4 py-1.5 text-sm shadow-sm backdrop-blur-xl"
     >
       <Sparkles className="size-3.5 text-accent" />
-      <span className="text-muted-foreground">AI-Powered Creative Design</span>
+      <span className="text-muted-foreground">AI Visual Creation Studio</span>
     </motion.div>
   );
 }
@@ -32,15 +122,21 @@ function HeroBadge() {
 // ---------------------------------------------------------------------------
 
 function MockupCursor() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <motion.div
       className="absolute z-10 pointer-events-none will-change-transform"
-      animate={{
-        x: [40, 120, 180, 60, 40],
-        y: [30, 80, 40, 120, 30],
-      }}
+      animate={
+        shouldReduceMotion
+          ? { x: 88, y: 52 }
+          : {
+              x: [40, 132, 220, 98, 40],
+              y: [34, 92, 46, 140, 34],
+            }
+      }
       transition={{
-        duration: 8,
+        duration: 9.5,
         repeat: Infinity,
         ease: "easeInOut",
       }}
@@ -81,25 +177,38 @@ function MockupCursor() {
 // ---------------------------------------------------------------------------
 
 function HeroMockup() {
+  const shouldReduceMotion = useReducedMotion();
+  const hoverMotionProps = shouldReduceMotion
+    ? {}
+    : { whileHover: { rotateX: 1.2, rotateY: -1.8, scale: 1.01 } };
+
   return (
     <motion.div
       variants={scaleUp}
       initial="hidden"
       animate="visible"
-      transition={{ delay: 1.2 }}
-      className="relative w-full max-w-5xl mx-auto mt-16 md:mt-24 will-change-transform"
-      style={{ animation: "landing-hero-float 6s ease-in-out infinite" }}
+      transition={{ delay: 1.15, duration: 0.9, ease: EXPO_OUT }}
+      className="landing-hero-stage relative w-full max-w-5xl mx-auto mt-14 md:mt-20 will-change-transform"
+      style={{
+        animation: shouldReduceMotion
+          ? undefined
+          : "landing-hero-float 7s ease-in-out infinite",
+      }}
     >
       {/* Glow behind mockup */}
       <div
-        className="absolute inset-0 -z-10 rounded-2xl blur-3xl opacity-20 dark:opacity-30"
+        className="absolute inset-x-8 top-8 -z-10 h-[78%] rounded-[2rem] blur-3xl opacity-30 dark:opacity-40"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 80%, oklch(0.90 0.17 115 / 0.4) 0%, transparent 70%)",
+            "linear-gradient(135deg, oklch(0.78 0.23 319 / 0.26), oklch(0.72 0.19 230 / 0.22), transparent 70%)",
         }}
       />
 
-      <div className="w-full rounded-2xl border border-border bg-card overflow-hidden shadow-2xl aspect-video ring-1 ring-white/10">
+      <motion.div
+        className="landing-hero-window w-full overflow-hidden rounded-2xl border border-border bg-card shadow-2xl aspect-video ring-1 ring-white/10"
+        {...hoverMotionProps}
+        transition={{ duration: 0.45, ease: EXPO_OUT }}
+      >
         {/* Window chrome */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
           <div className="flex items-center gap-1.5">
@@ -108,17 +217,21 @@ function HeroMockup() {
             <span className="size-3 rounded-full bg-green-400/80" />
           </div>
           <span className="text-xs text-muted-foreground font-medium">
-            Loomic Canvas
+            {BRAND_NAME} Canvas
           </span>
           <div className="w-14" />
         </div>
 
         {/* Canvas area -- hero image is LCP candidate, loaded eagerly */}
-        <div className="relative w-full h-full">
+        <div className="relative w-full h-full overflow-hidden">
           <MockupCursor />
+          <div
+            aria-hidden="true"
+            className="landing-canvas-scan absolute inset-0 z-10"
+          />
           <Image
             src="/images/showcase/showcase-12.jpg"
-            alt="Loomic Canvas AI creative workspace"
+            alt={`${BRAND_NAME} AI creative workspace`}
             width={1200}
             height={675}
             priority
@@ -127,7 +240,7 @@ function HeroMockup() {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1024px"
           />
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -171,7 +284,7 @@ function AnimatedSubtitle({ show }: { show: boolean }) {
       animate={show ? "visible" : "hidden"}
       className="mt-4 text-sm md:text-base text-muted-foreground font-light tracking-[0.2em] uppercase"
     >
-      Where Ideas Become Reality
+      Make Every Frame Worth Seeing
     </motion.p>
   );
 }
@@ -182,15 +295,14 @@ function AnimatedSubtitle({ show }: { show: boolean }) {
 
 export function HeroSection() {
   const { isComplete } = useTypewriter({
-    text: "让创意，自由生长",
+    text: HERO_HEADLINE,
     speed: 60,
     delay: 200,
   });
   const [showSub, setShowSub] = useState(false);
 
-  // Compute typewriter total duration: delay + text.length * speed
-  // 200 + 7 * 60 = 620ms -> subtitle at ~1020ms
-  const typewriterEnd = 200 + 7 * 60;
+  // Keep the subtitle synchronized with the localized headline length.
+  const typewriterEnd = 200 + HERO_HEADLINE.length * 60;
   const subtitleDelay = typewriterEnd + 400;
   const descDelay = (subtitleDelay + 200) / 1000;
   const ctaDelay = (subtitleDelay + 400) / 1000;
@@ -207,18 +319,18 @@ export function HeroSection() {
       {/* Animated gradient background -- GPU-composited via translate3d */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div
-          className="landing-hero-glow-1 absolute -top-1/4 right-0 w-[80vw] h-[80vw] rounded-full opacity-60 will-change-transform"
+          className="landing-hero-ribbon landing-hero-ribbon-a absolute opacity-70 will-change-transform"
           style={{
             background:
-              "radial-gradient(ellipse at center, oklch(0.90 0.17 115 / 0.08) 0%, transparent 70%)",
+              "linear-gradient(90deg, transparent 0%, oklch(0.73 0.23 319 / 0.16) 32%, oklch(0.70 0.17 230 / 0.14) 58%, transparent 100%)",
             animation: "landing-gradient-drift-1 18s ease-in-out infinite alternate",
           }}
         />
         <div
-          className="landing-hero-glow-2 absolute bottom-0 -left-1/4 w-[60vw] h-[60vw] rounded-full opacity-50 will-change-transform"
+          className="landing-hero-ribbon landing-hero-ribbon-b absolute opacity-60 will-change-transform"
           style={{
             background:
-              "radial-gradient(ellipse at center, oklch(0.556 0 0 / 0.05) 0%, transparent 70%)",
+              "linear-gradient(90deg, transparent 0%, oklch(0.80 0.20 190 / 0.12) 36%, oklch(0.66 0.20 282 / 0.12) 70%, transparent 100%)",
             animation: "landing-gradient-drift-2 22s ease-in-out infinite alternate",
           }}
         />
@@ -236,13 +348,15 @@ export function HeroSection() {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "radial-gradient(ellipse at center, transparent 50%, oklch(0 0 0 / 0.03) 100%)",
+              "linear-gradient(180deg, oklch(1 0 0 / 0.04) 0%, transparent 34%, oklch(0 0 0 / 0.04) 100%)",
           }}
         />
       </div>
 
       {/* Content */}
       <div className="flex flex-col items-center text-center px-4 max-w-4xl mx-auto w-full">
+        <BrandPrelude />
+
         {/* Badge */}
         <HeroBadge />
 
@@ -251,10 +365,10 @@ export function HeroSection() {
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          transition={{ delay: 0.1 }}
-          className="mt-6 text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter bg-gradient-to-r from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent"
+          transition={{ delay: 0.32, duration: 0.8, ease: EXPO_OUT }}
+          className="landing-hero-title mt-6 text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter bg-gradient-to-r from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent"
         >
-          <TypewriterText text="让创意，自由生长" speed={60} delay={200} />
+          <TypewriterText text={HERO_HEADLINE} speed={60} delay={200} />
         </motion.h1>
 
         {/* English subtitle -- editorial style */}
@@ -268,7 +382,7 @@ export function HeroSection() {
           transition={{ delay: descDelay }}
           className="mt-6 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed"
         >
-          从灵感到作品，Loomic 是你的 AI 设计伙伴。智能理解你的创意意图，生成专业级设计，让每一个想法都能成为现实。
+          从灵感到可交付画面，{BRAND_NAME} 是你的 AI 视觉创作伙伴。它理解品牌、场景与审美目标，帮你快速生成、迭代并沉淀专业作品。
         </motion.p>
 
         {/* CTA Buttons */}
@@ -281,15 +395,15 @@ export function HeroSection() {
         >
           <Link
             href="/login"
-            className={cn(
+          className={cn(
               "landing-cta-shimmer inline-flex items-center px-8 py-3 rounded-full text-base font-medium",
               "text-foreground",
-              "transition-all duration-200 hover:scale-105 active:scale-95",
-              "hover:shadow-[0_0_24px_4px_oklch(0.90_0.17_115_/_0.35)]",
+              "transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:scale-[1.035] active:scale-95",
+              "hover:shadow-[0_0_30px_6px_oklch(0.74_0.22_310_/_0.34)]",
             )}
             style={{
               background:
-                "linear-gradient(135deg, oklch(0.90 0.17 115) 0%, oklch(0.82 0.17 115) 100%)",
+                "linear-gradient(135deg, oklch(0.88 0.18 330) 0%, oklch(0.78 0.18 252) 48%, oklch(0.83 0.16 190) 100%)",
             }}
           >
             开始创作
@@ -302,7 +416,7 @@ export function HeroSection() {
                 .querySelector("#showcase")
                 ?.scrollIntoView({ behavior: "smooth" });
             }}
-            className="group inline-flex items-center gap-2 px-8 py-3 rounded-full text-base font-medium border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
+            className="group inline-flex items-center gap-2 px-8 py-3 rounded-full text-base font-medium border border-border bg-background/55 text-muted-foreground backdrop-blur-xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-foreground/25 hover:text-foreground hover:bg-muted"
           >
             查看案例
             <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" />

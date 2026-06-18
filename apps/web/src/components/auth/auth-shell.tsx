@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
-import { LoomicLogoInverted } from "../icons/loomic-logo";
+import { BRAND_NAME, BrandLogo } from "@/components/brand/brand-logo";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -38,8 +38,10 @@ export function AuthShell({
             custom={0}
             className="mb-4 flex items-center gap-4"
           >
-            <LoomicLogoInverted className="size-14" />
-            <h1 className="text-4xl font-bold tracking-tight">Loomic</h1>
+            <BrandLogo
+              iconClassName="size-14 rounded-2xl"
+              className="text-4xl"
+            />
           </motion.div>
 
           <motion.p variants={fadeUp} custom={1} className="mb-3 text-3xl font-semibold tracking-tight">
